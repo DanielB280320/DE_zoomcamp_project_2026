@@ -5,6 +5,7 @@ config/
 logs/
 
 # python
+.venv/
 __pycache__/
 *.pyc
 
@@ -20,6 +21,7 @@ logs/
 
 # Credentials
 *.json
+*.env
 
 # gzip files
 *.gz

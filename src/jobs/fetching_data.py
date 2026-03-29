@@ -11,8 +11,9 @@ import os
 
 pyspark.__file__
 
-#configuration
-gcs_credentials = '/opt/airflow/gcs_credentials/credentials/service_account_creds.json'
+#Environment variables
+gcs_credentials = os.environ.get('GCS_CREDENTIALS')
+gcs_bucket = os.environ.get('BUCKET_NAME')
 
 conf = SparkConf() \
     .setMaster('local[*]') \
@@ -55,7 +56,7 @@ urllib.request.urlretrieve(
 
 print(f'Data downloaded stored in path {file_path}')
 
-#Initial schema definition:
+#Initial Schema definition:
 schema_housing = types.StructType([
     types.StructField('PERIOD_BEGIN', types.TimestampType(), True),
     types.StructField('PERIOD_END', types.TimestampType(), True),
@@ -117,7 +118,7 @@ df_housing \
     .repartition(10) \
     .write \
     .mode('overwrite') \
-    .parquet('gs://de-zoomcamp-2026-project-bucket/weekly_housing_market_data_most_recent.parquet')
+    .parquet(f'gs://{gcs_bucket}/weekly_housing_market_data_most_recent.parquet')
 
 print('Data was succesfully stored')
 

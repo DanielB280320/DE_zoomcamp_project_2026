@@ -114,7 +114,7 @@ services:
     <<: *airflow-common
     command: api-server
     ports:
-      - "8080:8080"
+      - "8080:8080" # Port 8080 mapped from apiserver container to host for Airflow API Server
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/monitor/health"]
       interval: 30s
@@ -130,6 +130,8 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    ports:
+      - "4040:4040" # Port 4040 mapped from scheduler container to host for Spark UI
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
       interval: 30s

@@ -11,8 +11,11 @@ import os
 
 pyspark.__file__
 
-#configuration
-gcs_credentials = '/opt/airflow/gcs_credentials/credentials/service_account_creds.json'
+#Environment variables
+gcs_credentials = os.environ.get('GCS_CREDENTIALS')
+gcp_project_id = os.environ.get('PROJECT_ID')
+gcs_bucket = os.environ.get('BUCKET_NAME')
+bq_dataset = os.environ.get('DATASET_NAME')
 
 conf = SparkConf() \
     .setMaster('local[*]') \
@@ -41,22 +44,22 @@ spark = SparkSession.builder \
         .config(conf= sc.getConf()) \
         .getOrCreate()
 
-bucket = "de-zoomcamp-2026-project-bucket"
+bucket = gcs_bucket
 spark.conf.set("temporaryGcsBucket", bucket)
 
 print('Reading data from Google Cloud Storage...')
 df_housing_gcs = \
     spark.read \
     .option('header', 'true') \
-    .parquet('gs://de-zoomcamp-2026-project-bucket/weekly_housing_market_data_most_recent.parquet')
-
+    .parquet(f'gs://{gcs_bucket}/weekly_housing_market_data_most_recent.parquet')
+    
 #df_housing_gcs.printSchema()
 
 #df_housing_gcs.show(truncate= False, n= 10)
 
 #print(df_housing_gcs.rdd.getNumPartitions)
 
-bq_path = 'project-0c3c5223-416f-4242-b0f.test_dataset.market_housing_data_consolidated'
+bq_path = f'{gcp_project_id}.{bq_dataset}.market_housing_data_consolidated'
 
 #Repartitioning the data before writing to bq
 df_housing_gcs = df_housing_gcs.repartition(10)

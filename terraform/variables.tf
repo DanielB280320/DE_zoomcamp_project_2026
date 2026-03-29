@@ -28,8 +28,8 @@ variable "gcs_bucket_name" {
   default     = "de-zoomcamp-2026-project-bucket"
 }
 
-# variable "bq_dataset_name" {
-#   description = "Bigquery dataset"
-#   default     = "test_dataset"
-# }
+variable "bq_dataset_name" {
+  description = "Bigquery dataset"
+  default     = "us_housing_dataset"
+}
 

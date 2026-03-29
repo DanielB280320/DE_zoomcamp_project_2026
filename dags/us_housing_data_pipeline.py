@@ -27,17 +27,18 @@ with DAG(
 
     fetching_data_job = BashOperator(
         task_id="download_dataset_from_source_server_job",
-        bash_command=f"python {path_local_home}/src/jobs/fetching_data.py"
+        bash_command=f"python -u {path_local_home}/src/jobs/fetching_data.py"
     )
 
     gcs_to_bq_job = BashOperator(
         task_id="Writing_data_from_gcs_bq_job",
-        bash_command=f"python {path_local_home}/src/jobs/gcs_to_bq.py"
+        bash_command=f"python -u {path_local_home}/src/jobs/gcs_to_bq.py"
     )
 
     dbt_model_job = BashOperator(
         task_id="Running_dbt_model_job",
-        bash_command=f"dbt run --full-refresh --project-dir {path_local_home}/housing_market_data"
+        bash_command=
+            f"dbt build --project-dir {path_local_home}/housing_market_data"
     )
 
 #Job dependencies
