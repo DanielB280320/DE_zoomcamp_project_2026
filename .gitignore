@@ -1,0 +1,25 @@
+# Airflow
+config/
+*.cfg
+*.log
+logs/
+
+# python
+__pycache__/
+*.pyc
+
+# dbt
+target/
+logs/
+*.log
+
+# terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Credentials
+*.json
+
+# gzip files
+*.gz

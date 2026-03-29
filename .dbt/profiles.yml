@@ -1,0 +1,14 @@
+housing_market_data:
+  outputs:
+    dev:
+      dataset: test_dataset
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      keyfile: /opt/airflow/gcs_credentials/credentials/service_account_creds.json
+      location: US
+      method: service-account
+      priority: interactive
+      project: project-0c3c5223-416f-4242-b0f
+      threads: 4
+      type: bigquery
+  target: dev

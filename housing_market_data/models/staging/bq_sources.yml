@@ -1,0 +1,11 @@
+version: 1
+
+sources: 
+  - name: raw_housing_market_data
+    description: "Historic raw housing data in the US"
+    database: project-0c3c5223-416f-4242-b0f # Project ID for BigQuery
+    schema: test_dataset # Dataset name in BigQuery
+    tables: 
+      - name: market_housing_data_consolidated
+        description: "US historic housing data"
+
