@@ -3,6 +3,7 @@ SELECT
     H.period_end,
     S.state_name,
     T.region_type,
+    R.region_name,
     H.duration,
     COUNT(*) AS Count_regions, 
     AVG(H.median_sale_price) AS Avg_median_sale_price,
@@ -29,5 +30,6 @@ GROUP BY
     H.period_end,
     S.state_name,
     T.region_type,
+    R.region_name,
     H.duration
 ORDER BY H.period_begin DESC
