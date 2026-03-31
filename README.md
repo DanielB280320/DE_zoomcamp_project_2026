@@ -1,4 +1,4 @@
-# DE Zoomcamp 2026 Project | US Housing Market Analysis
+# US Housing Market Analysis | DE Zoomcamp 2026 Project
 
 ## Problem Description 
 
@@ -43,7 +43,7 @@ The pipeline works completely in automatic way and all the jobs/tasks are fully 
 
 ---
 
-## Data warehouse: 
+## Data warehouse
 
 As mentioned early, before storing the data into the data warehouse the consolidated table is partitioned and clustered in the following way: 
 
@@ -54,7 +54,7 @@ metros like San Francisco, Atlanta, or Phoenix) BigQuery can co-locate rows from
 
 ---
 
-## Transformations:
+## Transformations
 
 The entire pipeline's transformations were performed through a structured dbt model where each layer/stage in the model is well defined:
 
@@ -86,19 +86,19 @@ This layered approach ensures **data quality is enforced early**, **logic is cen
 
 ---
 
-## Dashboard:
+## Dashboard
 
-### US Housing Market State (Metropolitan)
+#### US Housing Market State (Metropolitan)
 ![report_state_slide](pictures/report_state_slide.png)
 
-### US Housing Market Region (Metropolitan)
+#### US Housing Market Region (Metropolitan)
 ![report_region_slide](pictures/report_region_slide.png)
 
-### Filtering By Region/State
+#### Filtering By Region/State
 ![report_region_slide_filtered](pictures/report_region_slide_filtered.png)
 
-### Access to the report
-https://lookerstudio.google.com/s/kMEl555lQmI
+#### Access to the report
+In the following url you can access to the final version of the dashboard https://lookerstudio.google.com/s/kMEl555lQmI
 
 ---
 
