@@ -12,6 +12,7 @@ import os
 pyspark.__file__
 
 #Environment variables
+path_local_home = os.environ.get('AIRFLOW_HOME', '/opt/airflow')
 gcs_credentials = os.environ.get('GCS_CREDENTIALS')
 gcs_bucket = os.environ.get('BUCKET_NAME')
 
@@ -22,7 +23,7 @@ conf = SparkConf() \
     .set("spark.executor.memory", "4g") \
     .set("spark.jars", "/opt/airflow/gcs_hadoop_conn/gcs-connector-hadoop3-2.2.5.jar") \
     .set("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
-    .set("spark.hadoop.google.cloud.auth.service.account.json.keyfile", gcs_credentials)
+    .set("spark.hadoop.google.cloud.auth.service.account.json.keyfile", f"{path_local_home}/{gcs_credentials}")
 
 #context
 sc = SparkContext(conf=conf)
@@ -31,7 +32,7 @@ hadoop_conf = sc._jsc.hadoopConfiguration()
 
 hadoop_conf.set("fs.AbstractFileSystem.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS")
 hadoop_conf.set("fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem")
-hadoop_conf.set("fs.gs.auth.service.account.json.keyfile", gcs_credentials)
+hadoop_conf.set("fs.gs.auth.service.account.json.keyfile", f"{path_local_home}/{gcs_credentials}")
 hadoop_conf.set("fs.gs.auth.service.account.enable", "true")
 
 #Creating Spark session
@@ -109,11 +110,13 @@ df_housing = \
     .csv('temp/weekly_housing_market_data_most_recent.tsv000.gz')
 
 records_extracted = df_housing.count()
+
 print(f'Records extracted from source: {records_extracted}')
 
 #print(df_housing.rdd.getNumPartitions)
 
 print('Uploading data to Google Cloud Storage...')
+
 df_housing \
     .repartition(10) \
     .write \

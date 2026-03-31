@@ -9,6 +9,10 @@ logs/
 __pycache__/
 *.pyc
 
+# Jupyter Notebook
+notebooks/
+.ipynb_checkpoints/
+
 # dbt
 target/
 logs/
@@ -25,3 +29,6 @@ logs/
 
 # gzip files
 *.gz
+
+# Others
+Setting_up_env.md

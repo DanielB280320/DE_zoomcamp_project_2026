@@ -4,8 +4,8 @@ housing_market_data:
       dataset: '{{env_var("DATASET_NAME")}}'
       job_execution_timeout_seconds: 300
       job_retries: 1
-      keyfile: '{{env_var("GCS_CREDENTIALS")}}'
-      location: '{{env_var("REGION", "US")}}'
+      keyfile: '{{env_var("AIRFLOW_HOME") ~ env_var("GCS_CREDENTIALS")}}'
+      location: '{{env_var("LOCATION", "US")}}'
       method: service-account
       priority: interactive
       project: '{{env_var("PROJECT_ID")}}'

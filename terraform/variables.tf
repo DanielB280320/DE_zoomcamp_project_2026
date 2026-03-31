@@ -1,21 +1,21 @@
 variable "credentials" {
   description = "My credentials"
-  default     = "/home/daniel/de_zoomcamp_2026_project/gcs_credentials/credentials/service_account_creds.json"
+  default     = "/gcs_credentials/service_account_creds.json" # In case dont work add the full path to the file, not the relative one
 }
 
 variable "project" {
   description = "Project name"
-  default     = "project-0c3c5223-416f-4242-b0f"
+  default     = "add_your_project_id_here"
 }
 
 variable "region" {
   description = "Region"
-  default     = "us-central1"
+  default     = "add_your_region_here"
 }
 
 variable "location" {
   description = "Project location"
-  default     = "US"
+  default     = "add_your_location_here"
 }
 
 variable "gcs_storage_class" {
@@ -25,11 +25,11 @@ variable "gcs_storage_class" {
 
 variable "gcs_bucket_name" {
   description = "Bucket name"
-  default     = "de-zoomcamp-2026-project-bucket"
+  default     = "add_your_bucket_name_here"
 }
 
 variable "bq_dataset_name" {
   description = "Bigquery dataset"
-  default     = "us_housing_dataset"
+  default     = "add_your_bq_dataset_name_here"
 }
 

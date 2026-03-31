@@ -179,36 +179,37 @@ and BigQuery are already stored within the project and mounted as a volume insid
 the container, so no additional drivers need to be installed.
 
 ### Required:
-- Docker Compose installed
-- Terraform installed and Cloud infrastructure configured
-- Environment variables file (`.env`)
+- Docker installed
+- Create a directory gcs_credentials/service_account_creds.json and place your credentials in the .json file
+- Terraform installed and Cloud infrastructure configured; You can use the variables.tf file and just modified the default values.
+- Create an environment variables file (`.env`)
 
 ### Run the pipeline with the following steps:
 
 Clone the repository to a directory on your host machine:
 
-    git clone <repo-name>
+  git clone <repo-name>
 
 Create a new `.env` file with the following variables defined:
 
-    # Airflow environment variables
-    AIRFLOW_UID= 50000
+  # Airflow environment variables
+  AIRFLOW_UID= 50000
 
-    # Cloud environment variables
-    GCS_CREDENTIALS= /opt/airflow/gcs_credentials/credentials/service_account_creds.json
-    PROJECT_ID= your-project-id
-    REGION= your-bucket-region (e.g. US, EU)
-    BUCKET_NAME= your-bucket-name
-    DATASET_NAME= your-dataset-name
+  # Cloud environment variables
+  GCS_CREDENTIALS= /gcs_credentials/service_account_creds.json # No modify this, just make sure the file is in the right location
+  PROJECT_ID= add_your_project_id_here
+  LOCATION= add_your_location_here eg. US - EU
+  BUCKET_NAME= add_your_bucket_name_here
+  DATASET_NAME= add_your_bq_dataset_name_here
 
 Within the project directory where your `docker-compose.yaml` is located, run the 
 following to build the Airflow containers:
 
-    # Build and run all Airflow containers
-    docker compose up
+  # Build and run all Airflow containers
+  docker compose up
 
-    # Build and run all Airflow containers in detached mode
-    docker compose up -d
+  # Build and run all Airflow containers in detached mode
+  docker compose up -d
 
 Wait until all containers are running and healthy. You can verify their status with:
 
@@ -232,117 +233,4 @@ again. The pipeline will then begin executing.
 
 
 
-
 ---
-
-
-
-## IaC: Installing Terraform
-
-To manage all the Cloud infrastructure as code Terraform is used, so as first we need to install it: 
-
-    # Download the binary
-    wget https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_linux_amd64.zip
-
-    # Unzip it
-    unzip terraform_1.7.5_linux_amd64.zip
-
-    # If you dont have unzip also you need to install it
-    sudo apt-get install unzip
-
-    # Move to PATH
-    sudo mv terraform /usr/local/bin/
-
-    # Clean up
-    rm terraform_1.7.5_linux_amd64.zip
-
-To verify the installation
-
-    terraform -v
-
-
-## IaC: Initializing Terraform
-
-Terraform must authenticate to Google Cloud to create infrastructure, so you need to have installed locally the gcloud CLI.
-
-In your terminal, use the gcloud CLI to set up your Application Default Credentials.
-
-    gcloud auth application-default login
-
-Your browser will open and prompt you to log in to your Google Cloud account. After successful authentication, your terminal will display the path where the gcloud CLI saved your credentials.
-
-    Credentials saved to file: [/Users/USER/.config/gcloud/application_default_credentials.json]
-
-These credentials will be used by any library that requests Application Default Credentials (ADC).
-
-Initializing
-
-    terraform init
-    terraform fmt
-    terraform validate
-    terraform plan
-    terraform apply
-
-Validate if our infrastructure was created succesfully
-
-    gcloud storage ls
-
-## Installing Spark: 
-
-For use Spark first at all we need to install Java version 17 or 21 which is requiered.
-
-Also we need to download the gcs connector to connect our local spark cluster to the gcs datalake; The jar connector can be downloaded from the gcs remote location as follow:
-
-    # Spark gsc connector
-    - gs://hadoop-lib/gcs/gcs-connector-hadoop3-2.2.5.jar 
-
-    reference: 
-    https://docs.cloud.google.com/dataproc/docs/concepts/connectors/cloud-storage?hl=es-419
-
-    Download from gcs remote location to our machine: 
-    - gsutil cp gs://hadoop-lib/gcs/gcs-connector-hadoop3-2.2.5.jar gcs-connector-hadoop3-2.2.5.jar
-
-
-Check spark version and Scala version: 
-    spark-shell --version
-    # or
-    ls $SPARK_HOME/jars/ | grep scala-library
-    
-
-Spark bigquery connector: 
-
-    #References: 
-    https://github.com/GoogleCloudDataproc/spark-bigquery-connector?tab=readme-ov-file
-
-## Installing dbt: 
-
-To installing dbt with our bigquery adapter we use: 
-
-    # Install dbt
-    uv run pip install dbt-bigquery
-
-    # Check version installed
-    uv run dbt --version
-
-    # Validate the connection to the datasource
-    uv run dbt debug
-
-
-
-
-
-
-
-## Docker addtional commands: 
-
-    # Add user to docker group
-    sudo usermod -aG docker $USER
-
-    # Verify group membership
-    groups                                                   
-
-
-
-
-
-    

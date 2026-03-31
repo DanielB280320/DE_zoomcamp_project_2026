@@ -81,7 +81,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-    - ${AIRFLOW_PROJ_DIR:-.}/gcs_credentials/credentials/service_account_creds.json:/opt/airflow/gcs_credentials/credentials/service_account_creds.json
+    - ${AIRFLOW_PROJ_DIR:-.}/gcs_credentials/service_account_creds.json:/opt/airflow/gcs_credentials/service_account_creds.json
     - ${AIRFLOW_PROJ_DIR:-.}/gcs_hadoop_conn:/opt/airflow/gcs_hadoop_conn
     - ${AIRFLOW_PROJ_DIR:-.}/src:/opt/airflow/src
     - ${AIRFLOW_PROJ_DIR:-.}/.dbt:/home/airflow/.dbt
