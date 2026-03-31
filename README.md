@@ -1,6 +1,6 @@
-# 🏠 US Housing Market Analysis | DE Zoomcamp 2026 Project
+# 🏙️ US Housing Market Analysis | DE Zoomcamp 2026 Project
 
-## 🔍 Problem Description
+## Problem Description
 
 The U.S. housing market generates enormous amounts of data every week across 
 hundreds of regions and all 50 states. For buyers, sellers, investors, and real 
@@ -17,7 +17,7 @@ price per square foot. A seller in Phoenix doesn't know whether active listings 
 their metro are rising or shrinking relative to comparable markets like Atlanta or 
 Chicago.
 
-### 💡 What this project solves
+### What this project solves
 
 This project addresses that problem by building an automated pipeline that ingests, 
 transforms, and models Redfin's weekly housing market data, and exposes it through 
@@ -188,28 +188,28 @@ the container, so no additional drivers need to be installed.
 
 Clone the repository to a directory on your host machine:
 
-  git clone <repo-name>
+    git clone <repo-name>
 
 Create a new `.env` file with the following variables defined:
 
-  # Airflow environment variables
-  AIRFLOW_UID= 50000
+    # Airflow environment variables
+    AIRFLOW_UID= 50000
 
-  # Cloud environment variables
-  GCS_CREDENTIALS= /gcs_credentials/service_account_creds.json # No modify this, just make sure the file is in the right location
-  PROJECT_ID= add_your_project_id_here
-  LOCATION= add_your_location_here eg. US - EU
-  BUCKET_NAME= add_your_bucket_name_here
-  DATASET_NAME= add_your_bq_dataset_name_here
+    # Cloud environment variables
+    GCS_CREDENTIALS= /gcs_credentials/service_account_creds.json # No modify this, just make sure the file is in the right location
+    PROJECT_ID= add_your_project_id_here
+    LOCATION= add_your_location_here eg. US - EU
+    BUCKET_NAME= add_your_bucket_name_here
+    DATASET_NAME= add_your_bq_dataset_name_here
 
 Within the project directory where your `docker-compose.yaml` is located, run the 
 following to build the Airflow containers:
 
-  # Build and run all Airflow containers
-  docker compose up
+    # Build and run all Airflow containers
+    docker compose up
 
-  # Build and run all Airflow containers in detached mode
-  docker compose up -d
+    # Build and run all Airflow containers in detached mode
+    docker compose up -d
 
 Wait until all containers are running and healthy. You can verify their status with:
 
