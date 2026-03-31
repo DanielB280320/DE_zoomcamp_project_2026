@@ -2,7 +2,7 @@
 
 ## Problem Description 
 
-The U.S. housing market generates enormous amounts of data every week — median sale prices, active listings, homes sold, days on market, and price per square foot — across hundreds of metro regions and all 50 states. However, this data is published by Redfin as raw, compressed TSV files that are updated weekly and require significant technical work to download, clean, and analyze. For buyers, sellers, investors, and real estate professionals, there is no simple way to monitor how the market is evolving across different geographies and time periods without building the infrastructure to process it themselves.
+The U.S. housing market generates enormous amounts of data every week across hundreds regions and all 50 states. For buyers, sellers, investors, and real estate professionals, there is no simple way to monitor how the market is evolving across different geographies and time periods without building the infrastructure to process it themselves. However, this data is published by Redfin as raw, compressed TSV files that are updated weekly and require significant technical work to download, clean, and analyze. 
 
 This gap leads to a concrete problem: housing market decisions are made without visibility into trends. A buyer considering San Francisco vs. San Jose has no easy way to compare how median sale prices or days on market have shifted over the past 9 years in each city. An investor evaluating states can't quickly identify that Massachusetts consistently leads in average sale price while Hawaii dominates in price per square foot. A seller in Phoenix doesn't know whether active listings in their metro are rising or shrinking relative to comparable markets like Atlanta or Chicago.
 
@@ -32,11 +32,14 @@ The pipeline was designed to process batch data based in the dataset used for th
 
 The pipeline works completely in automatic way and all the jobs/tasks are fully orchestrated with a multi step DAG through Airflow as orchestrator:
 
-- 1. Fetching data task: The first task is a Spark Job making use of the GCS Connector for Spark Hadoop to create and Spark Session which is running is an local Spark cluster. This job process all the raw data extracted from the source server (a generated link address in the redfin page where the data is accesible and updated every week); The data is downloaded and stored locally in a temporary directory from where Spark read the data in a .tsv format (similarly to .csv format but tab separate values) make an initial schema definition to the dataset usefull for further partitioning and clustering and finally write the dataset to the Cloud external path in a .parquet format and also partitioned leveraging the Spark distribuited processing for large workloads (the dataset from 2017 up to date contains about 5.6+ Millions rows).
+- **Fetching data task:** The first task is a Spark Job making use of the GCS Connector for Spark Hadoop to create and Spark Session which is running is an local Spark cluster. This job process all the raw data extracted from the source server (a generated link address in the redfin page where the data is accesible and updated every week); The data is downloaded and stored locally in a temporary directory from where Spark read the data in a .tsv format (similarly to .csv format but tab separate values) make an initial schema definition to the dataset usefull for further partitioning and clustering and finally write the dataset to the Cloud external path in a .parquet format and also partitioned leveraging the Spark distribuited processing for large workloads (the dataset from 2017 up to date contains about 5.6+ Millions rows).
 
-- 2. GCS to Bq task: When all raw data is already stored in the datalake another Spark Job using the GCS and Bigquery connectors (at the same time when creating the Spark Session) for Spark Hadoop read all the partitioned .parquet files. Before loading the data to Bigquery its recommended to define an existing bucket as temporal bucket or create a new one for Bigquery to stored the data temporaly due in case the BQ load fails, the raw file is still safe in GCS. Finally the data is wrote to the data warehouse partitioned by the period_begin field (date column) and clustered by the region_name field (city/region name column). 
+- **GCS to Bq task:** When all raw data is already stored in the datalake another Spark Job using the GCS and Bigquery connectors (at the same time when creating the Spark Session) for Spark Hadoop read all the partitioned .parquet files. Before loading the data to Bigquery its recommended to define an existing bucket as temporal bucket or create a new one for Bigquery to stored the data temporaly due in case the BQ load fails, the raw file is still safe in GCS. Finally the data is wrote to the data warehouse partitioned by the period_begin field (date column) and clustered by the region_name field (city/region name column). 
 
-- 3. dbt model task: The dbt model task in the DAG is in charge of cleaning, transform, modeling and enrich the data through each of the defined stages in the model: Staging, Intermediate and Marts
+- **dbt model task:** The dbt model task in the DAG is in charge of cleaning, transform, modeling and enrich the data through each of the defined stages in the model: Staging, Intermediate and Marts
+
+    # Job dependencies
+    fetching_data_job >> gcs_to_bq_job >> dbt_model_job
 
 ---
 
@@ -44,18 +47,10 @@ The pipeline works completely in automatic way and all the jobs/tasks are fully 
 
 As mentioned early, before storing the data into the data warehouse the consolidated table is partitioned and clustered in the following way: 
 
-    - Partitioned by <b> period_begin </b> is critical because the dataset spans nearly a decade 
-    of weekly housing market data (2017–2026). Since queries and the dashboard 
-    filters operate on a specific time range, partitioning by date allows BigQuery to skip 
-    irrelevant partitions entirely and scan only the time window needed, dramatically 
-    reducing query costs and execution time.
+- Partitioned by **period_begin** is critical because the dataset spans nearly a decade of weekly housing market data (2017–2026). Since queries and the dashboard filters operate on a specific time range, partitioning by date allows BigQuery to skip irrelevant partitions entirely and scan only the time window needed, dramatically reducing query costs and execution time.
 
-    - Clustering by **region_name** further optimizes performance within each partition. 
-    Since the dashboard heavily filters and ranks data by region/city (comparing 
-    metros like San Francisco, Atlanta, or Phoenix) BigQuery can co-locate rows from 
-    the same region on the same storage blocks. This means that queries filtering or 
-    grouping by region scan significantly less data, making the ranking tables and 
-    trend line charts on reports faster and more cost efficient to compute.
+- Clustering by **region_name** further optimizes performance within each partition. Since the dashboard heavily filters and ranks data by region/city (comparing 
+metros like San Francisco, Atlanta, or Phoenix) BigQuery can co-locate rows from the same region on the same storage blocks. This means that queries filtering or  grouping by region scan significantly less data, making the ranking tables and trend line charts on reports faster and more cost efficient to compute.
 
 ---
 
@@ -63,16 +58,16 @@ As mentioned early, before storing the data into the data warehouse the consolid
 
 The entire pipeline's transformations were performed through a structured dbt model where each layer/stage in the model is well defined:
 
-    - **Staging** (`stg_us_housing_data.sql`): The first layer reads directly from 
+- **Staging** (`stg_us_housing_data.sql`): The first layer reads directly from 
     the raw BigQuery table defined in `bq_sources.yml`. It applies basic cleaning 
     like renaming columns and casting data types to produce a standardized and consistent 
     base model that all downstream models depend on.
 
-    - **Intermediate** (`int_us_housing_data.sql`): This layer applies business logic 
+- **Intermediate** (`int_us_housing_data.sql`): This layer applies business logic 
     transformations on top of the staging model such as deriving calculated fields, 
     joining related datasets/seeds, deduplicating, filtering null values and preparing the data for dimensional modeling.
 
-    - **Marts** — Dimensional Models: This layer implements a **star schema** structure 
+- **Marts** — Dimensional Models: This layer implements a **star schema** structure 
     with dedicated dimension and fact tables:
     - `dim_region.sql` — contains the region attributes
     - `dim_region_type.sql` — classifies regions by type (county or metro)
@@ -80,7 +75,7 @@ The entire pipeline's transformations were performed through a structured dbt mo
     - `fact_housing_data.sql` — the central fact table containing all housing 
       market records and quantitative fields/columns like metrics that later can be joined to the dimension tables
 
-    - **Marts** — Reporting Models: The final layer pre-aggregates the fact and 
+- **Marts** — Reporting Models: The final layer pre-aggregates the fact and 
     dimension tables into ready-to-query reporting table that directly power 
     the dashboard:
     - focused weekly aggregations model directly used for the multiple charts and tables in the dashboard.
@@ -93,15 +88,16 @@ This layered approach ensures **data quality is enforced early**, **logic is cen
 
 ## Dashboard:
 
-### US Housing Market Region (Metropolitan)
-![report_region_slide](pictures/report_region_slide.png)
-
 ### US Housing Market State (Metropolitan)
 ![report_state_slide](pictures/report_state_slide.png)
 
-### Filtering by Region
+### US Housing Market Region (Metropolitan)
+![report_region_slide](pictures/report_region_slide.png)
+
+### Filtering By Region/State
 ![report_region_slide_filtered](pictures/report_region_slide_filtered.png)
 
+### Access to the report
 https://lookerstudio.google.com/s/kMEl555lQmI
 
 ---
