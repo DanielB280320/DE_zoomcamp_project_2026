@@ -1,6 +1,6 @@
-# US Housing Market Analysis | DE Zoomcamp 2026 Project
+# 🏠 US Housing Market Analysis | DE Zoomcamp 2026 Project
 
-## Problem Description
+## 🔍 Problem Description
 
 The U.S. housing market generates enormous amounts of data every week across 
 hundreds of regions and all 50 states. For buyers, sellers, investors, and real 
@@ -17,17 +17,17 @@ price per square foot. A seller in Phoenix doesn't know whether active listings 
 their metro are rising or shrinking relative to comparable markets like Atlanta or 
 Chicago.
 
-### What this project solves
+### 💡 What this project solves
 
 This project addresses that problem by building an automated pipeline that ingests, 
 transforms, and models Redfin's weekly housing market data, and exposes it through 
 an interactive analytical dashboard with two levels of geographic analysis:
 
-- **Metropolitan/State level** — aggregates metrics across all regions within each 
+- 🗺️ **Metropolitan/State level** — aggregates metrics across all regions within each 
   state, allowing macro comparisons of market health, affordability, and competition 
   across the entire country.
 
-- **Metropolitan/Region level** — ranks the top regions by average sale price, price 
+- 📍 **Metropolitan/Region level** — ranks the top regions by average sale price, price 
   per square foot, homes sold, active listings, and days on market, with 9 years of 
   weekly trend lines (2017–2026) and filters by State and Region name.
 
@@ -37,7 +37,7 @@ that would otherwise require hours of manual data work.
 
 ---
 
-## Cloud
+## ☁️ Cloud
 
 For the development of this project, Google Cloud Platform (GCP) is used as the 
 Cloud Service Provider. You must have previously created a GCP project, a service 
@@ -53,7 +53,7 @@ for further processing.
 
 ---
 
-## Data Ingestion: Batch Processing / Workflow Orchestration
+## 🔄 Data Ingestion: Batch Processing / Workflow Orchestration
 
 The pipeline was designed to process batch data based on the dataset used for the 
 development of this project. The Redfin US Housing Market Dataset is generated on 
@@ -63,7 +63,7 @@ previous week.
 The pipeline works in a completely automatic way and all jobs/tasks are fully 
 orchestrated through a multi-step DAG using Airflow as the orchestrator:
 
-- **Fetching data task:** The first task is a Spark Job that uses the GCS Connector 
+- 📥 **Fetching data task:** The first task is a Spark Job that uses the GCS Connector 
   for Spark Hadoop to create a Spark Session running on a local Spark cluster. This 
   job processes all the raw data extracted from the source server (a generated link 
   address on the Redfin page where the data is accessible and updated every week). 
@@ -75,7 +75,7 @@ orchestrated through a multi-step DAG using Airflow as the orchestrator:
   for large workloads (the dataset from 2017 to date contains approximately 
   5.6+ million rows).
 
-- **GCS to BQ task:** Once all raw data is stored in the data lake, another Spark 
+- 🪣 **GCS to BQ task:** Once all raw data is stored in the data lake, another Spark 
   Job using the GCS and BigQuery connectors (both initialized when creating the Spark 
   Session) reads all the partitioned .parquet files. Before loading the data into 
   BigQuery, it is recommended to define an existing bucket as a temporary bucket — 
@@ -84,16 +84,16 @@ orchestrated through a multi-step DAG using Airflow as the orchestrator:
   the data warehouse partitioned by the `period_begin` field (date column) and 
   clustered by the `region_name` field (city/region name column).
 
-- **dbt model task:** The dbt model task in the DAG is responsible for cleaning, 
+- 🔧 **dbt model task:** The dbt model task in the DAG is responsible for cleaning, 
   transforming, modeling, and enriching the data through each of the defined stages 
   in the model: Staging, Intermediate, and Marts.
 
-    ### Job dependencies
+    ### ⛓️ Job dependencies
     fetching_data_job >> gcs_to_bq_job >> dbt_model_job
 
 ---
 
-## Data Warehouse
+## 🗄️ Data Warehouse
 
 As mentioned earlier, before storing the data into the data warehouse the 
 consolidated table is partitioned and clustered in the following way:
@@ -114,7 +114,7 @@ consolidated table is partitioned and clustered in the following way:
 
 ---
 
-## Transformations
+## ⚙️ Transformations
 
 All pipeline transformations were performed through a structured dbt model where 
 each layer/stage is well defined:
@@ -129,7 +129,7 @@ each layer/stage is well defined:
   joining related datasets/seeds, deduplicating, filtering null values, and 
   preparing the data for dimensional modeling.
 
-- **Marts** — Dimensional Models: This layer implements a **star schema** structure 
+- ⭐ **Marts** — Dimensional Models: This layer implements a **star schema** structure 
   with dedicated dimension and fact tables:
     - `dim_region.sql` — Contains the region attributes
     - `dim_region_type.sql` — Classifies regions by type (county or metro)
@@ -138,37 +138,37 @@ each layer/stage is well defined:
     - `fact_housing_data.sql` — The central fact table containing all housing market 
       records and quantitative metrics that can be joined to the dimension tables
 
-- **Marts** — Reporting Models: The final layer pre-aggregates the fact and dimension 
+- 📊 **Marts** — Reporting Models: The final layer pre-aggregates the fact and dimension 
   tables into ready-to-query reporting tables that directly power the dashboard:
     - `sale_price_weekly.sql` — A focused weekly aggregations model used directly 
       for the multiple charts and tables in the dashboard.
 
 ![dbt_model_lineage](/pictures/dbt_model_lineage.png)
 
-This layered approach ensures **data quality is enforced early**, **business logic 
+This layered approach ensures **data quality is enforced early**, **ogic 
 is centralized** in one place, and the **dashboard always queries pre-aggregated, 
 optimized models** rather than hitting the raw data directly.
 
 ---
 
-## Dashboard
+## 📈 Dashboard
 
-#### US Housing Market State (Metropolitan)
+#### 🗺️ US Housing Market State (Metropolitan)
 ![report_state_slide](pictures/report_state_slide.png)
 
-#### US Housing Market Region (Metropolitan)
+#### 📍 US Housing Market Region (Metropolitan)
 ![report_region_slide](pictures/report_region_slide.png)
 
-#### Filtering By Region/State
+#### 🔎 Filtering By Region/State
 ![report_region_slide_filtered](pictures/report_region_slide_filtered.png)
 
-#### Access to the report
+#### 🔗 Access to the report
 The final version of the dashboard is accessible at the following URL:  
 https://lookerstudio.google.com/s/kMEl555lQmI
 
 ---
 
-## Reproducibility: Requirements
+## 🚀 Reproducibility: Requirements
 
 Although the pipeline uses Spark for the Spark Jobs, it is not necessary to install 
 Scala or Spark on your machine, because all requirements are pre-configured in the 
@@ -183,7 +183,7 @@ the container, so no additional drivers need to be installed.
 - Terraform installed and Cloud infrastructure configured
 - Environment variables file (`.env`)
 
-Run the pipeline with the following steps:
+### Run the pipeline with the following steps:
 
 Clone the repository to a directory on your host machine:
 
@@ -200,8 +200,6 @@ Create a new `.env` file with the following variables defined:
     REGION= your-bucket-region (e.g. US, EU)
     BUCKET_NAME= your-bucket-name
     DATASET_NAME= your-dataset-name
-
-The pipeline is parameterized to use the variables defined above.
 
 Within the project directory where your `docker-compose.yaml` is located, run the 
 following to build the Airflow containers:
