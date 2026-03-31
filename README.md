@@ -2,7 +2,7 @@
 
 ## Problem Description 
 
-The U.S. housing market generates enormous amounts of data every week across hundreds regions and all 50 states. For buyers, sellers, investors, and real estate professionals, there is no simple way to monitor how the market is evolving across different geographies and time periods without building the infrastructure to process it themselves. However, this data is published by Redfin as raw, compressed TSV files that are updated weekly and require significant technical work to download, clean, and analyze. 
+The U.S. housing market generates enormous amounts of data every week across hundreds regions and all 50 states. For buyers, sellers, investors, and real estate professionals, there is no simple way to monitor how the market is evolving across different geographies and time periods without building the infrastructure to process it themselves. 
 
 This gap leads to a concrete problem: housing market decisions are made without visibility into trends. A buyer considering San Francisco vs. San Jose has no easy way to compare how median sale prices or days on market have shifted over the past 9 years in each city. An investor evaluating states can't quickly identify that Massachusetts consistently leads in average sale price while Hawaii dominates in price per square foot. A seller in Phoenix doesn't know whether active listings in their metro are rising or shrinking relative to comparable markets like Atlanta or Chicago.
 
@@ -63,22 +63,22 @@ The entire pipeline's transformations were performed through a structured dbt mo
     like renaming columns and casting data types to produce a standardized and consistent 
     base model that all downstream models depend on.
 
-- **Intermediate** (`int_us_housing_data.sql`): This layer applies business logic 
+- **Intermediate** (`int_us_housing_data.sql`): This layer applies logic 
     transformations on top of the staging model such as deriving calculated fields, 
     joining related datasets/seeds, deduplicating, filtering null values and preparing the data for dimensional modeling.
 
 - **Marts** — Dimensional Models: This layer implements a **star schema** structure 
     with dedicated dimension and fact tables:
-    - `dim_region.sql` — contains the region attributes
-    - `dim_region_type.sql` — classifies regions by type (county or metro)
-    - `dim_state.sql` — contains state-level attributes enriched and using fields of the us_states seed (state name, region and division)
-    - `fact_housing_data.sql` — the central fact table containing all housing 
+    - `dim_region.sql` — Contains the region attributes
+    - `dim_region_type.sql` — Classifies regions by type (county or metro)
+    - `dim_state.sql` — Contains state-level attributes enriched and using fields of the us_states seed (state name, region and division)
+    - `fact_housing_data.sql` — The central fact table containing all housing 
       market records and quantitative fields/columns like metrics that later can be joined to the dimension tables
 
 - **Marts** — Reporting Models: The final layer pre-aggregates the fact and 
     dimension tables into ready-to-query reporting table that directly power 
     the dashboard:
-    - focused weekly aggregations model directly used for the multiple charts and tables in the dashboard.
+    - `sale_price_weekly.sql` — Focused weekly aggregations model directly used for the multiple charts and tables in the dashboard.
 
 ![dbt_model_lineage](/pictures/dbt_model_lineage.png)
 
@@ -145,7 +145,7 @@ Wait until all the containers are running and healthy, you can validate the stat
 
 When the airflow-apiserver container is up and healthy open the Airflow UI in the port 8080:
 
-    http://localhost:8080
+http://localhost:8080
 
 Go to the dags section and select the pipeline 'us_housing_data_pipeline'
 
@@ -160,7 +160,7 @@ Within the new open window select 'Unique execution' and finally select 'Trigger
 
 
 
-
+---
 
 
 
