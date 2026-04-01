@@ -37,6 +37,63 @@ that would otherwise require hours of manual data work.
 
 ---
 
+## Project Structure
+
+📁 DE_zoomcamp_project_2026/
+├── 📁 config/
+│   └── airflow.cfg                              # Airflow configuration file
+├── 📁 dags/
+│   └── us_housing_data_pipeline.py              # Main Airflow DAG — orchestrates the 3 pipeline tasks
+├── 📁 gcs_credentials/                          # ⚠️ gitignored — add your own credentials here
+│   └── service_account_creds.json               # GCP service account key
+├── 📁 gcs_hadoop_conn/
+│   ├── gcs-connector-hadoop3-2.2.5.jar          # Spark connector for GCS
+│   └── spark-bigquery-with-dependencies_2.13-0.44.0.jar  # Spark connector for BigQuery
+├── 📁 housing_market_data/                      # dbt project
+│   ├── 📁 models/
+│   │   ├── 📁 staging/                          # Raw source models — minimal transformation
+│   │   │   ├── stg_us_housing_data.sql
+│   │   │   └── bq_sources.yml                   # BigQuery source definitions
+│   │   ├── 📁 intermediate/                     # Business logic transformations
+│   │   │   └── int_us_housing_data.sql
+│   │   └── 📁 marts/                            # Final models ready for reporting
+│   │       ├── dim_region.sql
+│   │       ├── dim_region_type.sql
+│   │       ├── dim_state.sql
+│   │       ├── fact_housing_data.sql             # Core fact table
+│   │       └── 📁 reporting/                    # Aggregated models for dashboard
+│   │           ├── aggregations_monthly.sql
+│   │           ├── aggregations_quarterly.sql
+│   │           ├── aggregations_weekly.sql
+│   │           └── sale_price_weekly.sql
+│   ├── 📁 seeds/
+│   │   └── us_states.csv                        # Static reference data for US states
+│   ├── 📁 macros/                               # Custom dbt macros
+│   ├── 📁 tests/                                # dbt data quality tests
+│   ├── 📁 snapshots/                            # dbt snapshots for SCD tracking
+│   ├── 📁 dbt_packages/
+│   │   └── dbt_utils/                           # dbt utility macros package
+│   ├── dbt_project.yml                          # dbt project configuration
+│   ├── packages.yml                             # dbt package dependencies
+│   └── README.md
+├── 📁 src/
+│   └── 📁 jobs/
+│       ├── fetching_data.py                     # Downloads dataset from source and uploads to GCS
+│       └── gcs_to_bq.py                         # Spark job — reads from GCS and writes to BigQuery
+├── 📁 terraform/
+│   ├── main.tf                                  # GCS bucket + BigQuery dataset provisioning
+│   └── variables.tf                             # Configurable infrastructure variables
+├── 📁 pictures/                                 # Screenshots for README documentation
+├── 📁 plugins/                                  # Custom Airflow plugins
+├── dockerfile                                   # Custom Airflow + Spark image
+├── docker-compose.yaml                          # Multi-container setup for Airflow services
+├── requirements.txt                             # Python dependencies
+├── pyproject.toml                               # Project metadata and build config
+├── uv.lock                                      # Dependency lock file
+└── README.md
+
+---
+
 ## ☁️ Cloud
 
 For the development of this project, Google Cloud Platform (GCP) is used as the 
