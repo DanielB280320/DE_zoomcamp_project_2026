@@ -189,11 +189,16 @@ the container, so no additional drivers need to be installed.
 Clone the repository to a directory on your host machine:
 
     git clone <repo-name>
+  
+Create a directory to stored your credentials with the following name: 
+
+    mkdir -p gcs_credentials && touch gcs_credentials/service_account_creds.json
 
 Create a new `.env` file with the following variables defined:
 
     # Airflow environment variables
     AIRFLOW_UID= 50000
+    AIRFLOW_HOME= /opt/airflow
 
     # Cloud environment variables
     GCS_CREDENTIALS= /gcs_credentials/service_account_creds.json # No modify this, just make sure the file is in the right location
@@ -205,10 +210,13 @@ Create a new `.env` file with the following variables defined:
 Within the project directory where your `docker-compose.yaml` is located, execute the 
 following to build and run the Airflow containers:
 
-    # Build and run all Airflow containers
+    # Build the container
+    docker compose build
+
+    # Run all Airflow containers
     docker compose up
 
-    # Build and run all Airflow containers in detached mode
+    # Run all Airflow containers in detached mode
     docker compose up -d
 
 Wait until all containers are running and healthy. You can verify their status with:
@@ -222,17 +230,37 @@ http://localhost:8080
 
 Go to the DAGs section and select the pipeline `us_housing_data_pipeline`.
 
-Toggle the switch next to the pipeline name and click **'Trigger'** in the 
-upper-right corner:
+![airflow_ui_1](pictures/airflow_ui_1.png)
+
+For the first DAG execution when you Toggle the switch next to the pipeline name it will then begin executing
 
 ![airflow_ui_2](pictures/airflow_ui_2.png)
 
+After that, when you want run it manually you need to select **'Trigger'** on the upper-right corner.
 In the window that opens, select **'Unique execution'** and click **'Trigger'** 
-again. The pipeline will then begin executing.
+again. 
+
+![airflow_ui_3](pictures/airflow_ui_3.png)
 
 While the pipeline is running, you can monitor the logs of all 3 tasks to identify what each process is performing. During the Spark job execution (Tasks 1 and 2), you can also visualize how data is being processed through the Spark UI available on port 4040:
 
 http://localhost:4040
 
+Depending on your local resources you can modify the driver and executor memory within the Spark Config Session (within each Spark Job) to adjust to your machine resources; Its recommended to run the pipeline in a machine with 4 cores and 16 gb ram or use a virtual machine with enough resources (already tested in a VM executing in 8 to 10 mins); Otherwise it can take a bit longer to finish the entire execution (20+ mins) or crash during the process
+
+    # Allocate the memory depending on your available resources; Bellow the default values configured: 
+    .set("spark.driver.memory", "4g") 
+    .set("spark.executor.memory", "4g")
+
+![dag_execution_time](pictures/dag_execution_time.png)
+
 Once the pipeline finishes successfully, the entire infrastructure will be fully provisioned and ready to use.
+
+
+## 🛠️ Future improvements
+
+To significantly improve the pipeline's performance the following points will be added: 
+- Create a Dataproc cluster on GCP where all the Spark Jobs can be send to be processed in a isolated way leveraging the dedicated resources of the cluster.
+- Design an incremental strategy to process only the new records added to the dataset avoiding process all the entire database with all the historic data in each execution.
+
 ---

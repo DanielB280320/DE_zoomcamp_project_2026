@@ -22,7 +22,7 @@ conf = SparkConf() \
     .setMaster('local[*]') \
     .setAppName('project_pipeline') \
     .set("spark.driver.memory", "4g") \
-    .set("spark.executor.memory", "8g") \
+    .set("spark.executor.memory", "4g") \
     .set("spark.jars", ",".join([
         "/opt/airflow/gcs_hadoop_conn/gcs-connector-hadoop3-2.2.5.jar",
         "/opt/airflow/gcs_hadoop_conn/spark-bigquery-with-dependencies_2.13-0.44.0.jar"
@@ -65,6 +65,7 @@ print('Writing data to Bigquery...')
 df_housing_gcs \
     .write.format('bigquery') \
     .mode('overwrite') \
+    .option('parentProject', gcp_project_id) \
     .option('partitionField', 'PERIOD_BEGIN') \
     .option('partitionType', 'MONTH') \
     .option('clusteredFields', 'REGION_NAME') \

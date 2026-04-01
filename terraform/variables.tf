@@ -1,6 +1,6 @@
 variable "credentials" {
   description = "My credentials"
-  default     = "/gcs_credentials/service_account_creds.json" # In case dont work add the full path to the file, not the relative one
+  default     = "Full_path_to_the_current_credentials_file" 
 }
 
 variable "project" {
