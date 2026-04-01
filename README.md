@@ -180,8 +180,8 @@ the container, so no additional drivers need to be installed.
 
 ### Required:
 - Docker installed
-- Create a directory gcs_credentials/service_account_creds.json and place your credentials in the .json file
-- Terraform installed and Cloud infrastructure configured; You can use the variables.tf file and just modified the default values.
+- Create a directory `gcs_credentials/service_account_creds.json` and place your credentials in the `.json` file
+- Terraform installed and Cloud infrastructure configured (with the required cloud account permissions); You can use the variables.tf file and just modified the default values.
 - Create an environment variables file (`.env`)
 
 ### Run the pipeline with the following steps:
@@ -210,7 +210,7 @@ Create a new `.env` file with the following variables defined:
 Within the project directory where your `docker-compose.yaml` is located, execute the 
 following to build and run the Airflow containers:
 
-    # Build the container
+    # Build the containers
     docker compose build
 
     # Run all Airflow containers
@@ -246,9 +246,9 @@ While the pipeline is running, you can monitor the logs of all 3 tasks to identi
 
 http://localhost:4040
 
-Depending on your local resources you can modify the driver and executor memory within the Spark Config Session (within each Spark Job) to adjust to your machine resources; Its recommended to run the pipeline in a machine with 4 cores and 16 gb ram or use a virtual machine with enough resources (already tested in a VM executing in 8 to 10 mins); Otherwise it can take a bit longer to finish the entire execution (20+ mins) or crash during the process
+Depending on your local resources, you can modify the driver and executor memory within the Spark Config Session (inside each Spark Job) to adjust to your machine's resources. It is recommended to run the pipeline on a machine with 4 cores and 16GB of RAM, or use a virtual machine with enough resources (already tested on a VM, executing in 8 to 10 minutes). Otherwise, it may take longer to finish the entire execution (20+ minutes) or crash during the process.
 
-    # Allocate the memory depending on your available resources; Bellow the default values configured: 
+    # Allocate memory depending on your available resources. Below are the default configured values: 
     .set("spark.driver.memory", "4g") 
     .set("spark.executor.memory", "4g")
 
@@ -259,8 +259,8 @@ Once the pipeline finishes successfully, the entire infrastructure will be fully
 
 ## 🛠️ Future improvements
 
-To significantly improve the pipeline's performance the following points will be added: 
-- Create a Dataproc cluster on GCP where all the Spark Jobs can be send to be processed in a isolated way leveraging the dedicated resources of the cluster.
-- Design an incremental strategy to process only the new records added to the dataset avoiding process all the entire database with all the historic data in each execution.
+To significantly improve the pipeline's performance, the following enhancements will be added:
+- Create a Dataproc cluster on GCP where all Spark jobs can be submitted for processing in an isolated environment, leveraging the cluster's dedicated resources.
+- Design an incremental strategy to process only newly added records, avoiding reprocessing the entire historical dataset on each execution.
 
 ---
