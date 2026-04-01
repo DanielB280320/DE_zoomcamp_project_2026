@@ -37,6 +37,12 @@ that would otherwise require hours of manual data work.
 
 ---
 
+## Project architecture
+
+![project_architecture](pictures/project_architecture.png)
+
+---
+
 ## Project Structure
 
     📁 DE_zoomcamp_project_2026/
@@ -54,7 +60,7 @@ that would otherwise require hours of manual data work.
     │   │   ├── 📁 staging/                          # Raw source models — minimal transformation
     │   │   │   ├── stg_us_housing_data.sql
     │   │   │   └── bq_sources.yml                   # BigQuery source definitions
-    │   │   ├── 📁 intermediate/                     # Business logic transformations
+    │   │   ├── 📁 intermediate/                     # Logic transformations
     │   │   │   └── int_us_housing_data.sql
     │   │   └── 📁 marts/                            # Final models ready for reporting
     │   │       ├── dim_region.sql
