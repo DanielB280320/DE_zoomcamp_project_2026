@@ -1,12 +1,12 @@
-# 🏙️ US Housing Market Analysis | DE Zoomcamp 2026 Project
+# 🏙️ US Housing Market Tracker | DE Zoomcamp 2026 Project
 
 ## Problem Description
 
-The U.S. housing market generates enormous amounts of data every week across 
-hundreds of regions and all 50 states. For buyers, sellers, investors, and real 
-estate professionals, there is no simple way to monitor how the market is evolving 
-across different geographies and time periods without building the infrastructure 
-to process it themselves.
+The U.S. housing market generates enormous amounts of data every week across hundreds 
+of regions and all 50 states. For buyers, sellers, investors, and real estate professionals, 
+there is no simple way to monitor how the market is evolving across different geographies and 
+time periods without spending significant time and resources collecting, processing, and analyzing 
+it themselves.
 
 This gap leads to a concrete problem: housing market decisions are made without 
 visibility into trends. A buyer considering San Francisco vs. San Jose has no easy 
@@ -202,8 +202,8 @@ Create a new `.env` file with the following variables defined:
     BUCKET_NAME= add_your_bucket_name_here
     DATASET_NAME= add_your_bq_dataset_name_here
 
-Within the project directory where your `docker-compose.yaml` is located, run the 
-following to build the Airflow containers:
+Within the project directory where your `docker-compose.yaml` is located, execute the 
+following to build and run the Airflow containers:
 
     # Build and run all Airflow containers
     docker compose up
@@ -230,7 +230,9 @@ upper-right corner:
 In the window that opens, select **'Unique execution'** and click **'Trigger'** 
 again. The pipeline will then begin executing.
 
+While the pipeline is running, you can monitor the logs of all 3 tasks to identify what each process is performing. During the Spark job execution (Tasks 1 and 2), you can also visualize how data is being processed through the Spark UI available on port 4040:
 
+http://localhost:4040
 
-
+Once the pipeline finishes successfully, the entire infrastructure will be fully provisioned and ready to use.
 ---

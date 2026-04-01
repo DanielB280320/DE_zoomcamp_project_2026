@@ -8,6 +8,7 @@ logs/
 .venv/
 __pycache__/
 *.pyc
+main.py
 
 # Jupyter Notebook
 notebooks/
