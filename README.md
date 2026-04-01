@@ -39,7 +39,7 @@ that would otherwise require hours of manual data work.
 
 ## Project Architecture
 
-![project_architecture](pictures/project_architecture.png)
+![architecture](pictures/architecture.png)
 
 ---
 
