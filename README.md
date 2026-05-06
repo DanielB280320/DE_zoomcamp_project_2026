@@ -309,7 +309,7 @@ While the pipeline is running, you can monitor the logs of all 3 tasks to identi
 
 http://localhost:4040
 
-Depending on your local resources, you can modify the driver memory within the Spark Config Session (inside each Spark Job) to adjust to your machine's resources. It is recommended to run the pipeline on a machine with 4 cores and 16GB of RAM, or use a virtual machine with enough resources (already tested on a VM with 8 cores and 16Gb Ram, executing in 5 to 6 minutes). Otherwise, it may take longer to finish the entire execution (20+ minutes) or crash during the process.
+Depending on your local resources, you can modify the driver memory within the Spark Config Session (inside each Spark Job) to adjust to your machine's resources. It is recommended to run the pipeline on a machine with 4 cores and 16GB of RAM, or use a virtual machine with enough resources (already tested on a VM with 8 cores and 32Gb Ram, executing in 5 to 6 minutes). Otherwise, it may take longer to finish the entire execution (20+ minutes) or crash during the process.
 
     # Allocate memory depending on your available resources. Below is the default driver configured value: 
     .set("spark.driver.memory", "12g") 

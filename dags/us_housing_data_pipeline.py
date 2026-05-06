@@ -6,6 +6,7 @@ from urllib import request
 import os
 from datetime import datetime, timedelta
 
+
 path_local_home = os.environ.get('AIRFLOW_HOME', '/opt/airflow')
 
 default_args = {
