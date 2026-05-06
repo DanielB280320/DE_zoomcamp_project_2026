@@ -214,6 +214,22 @@ optimized models** rather than hitting the raw data directly.
 
 ---
 
+## 🧱 Incremental Strategy
+
+At the first time when the pipeline is executed, all historic data from the source 
+will be loaded into the GCS datalake. Following executions will only process new 
+records added each week to the Redfin datasets.
+
+This strategy significantly improves pipeline performance by avoiding data reprocessing.
+
+### How it works
+- **First run:** If no existing file is found in GCS, the full historical dataset is loaded
+- **Subsequent runs:** New records are detected via a `left_anti` join against  
+  `weekly_housing_market_data_most_recent.parquet` using the composite key:  
+  `PERIOD_BEGIN` + `PERIOD_END` + `REGION_ID` + `DURATION`
+
+---
+
 ## 📈 Dashboard
 
 #### 🗺️ US Housing Market State (Metropolitan)
