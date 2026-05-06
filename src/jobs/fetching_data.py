@@ -16,8 +16,6 @@ path_local_home = os.environ.get('AIRFLOW_HOME', '/opt/airflow')
 gcs_credentials = os.environ.get('GCS_CREDENTIALS')
 gcs_bucket = os.environ.get('BUCKET_NAME')
 
-
-
 # Spark configuration
 def spark_config(path_local, cloud_credentials):
     conf = SparkConf() \
@@ -71,7 +69,7 @@ def fetching_data():
         print(f'Error fetching data: {e}')
 
 # Initial Schema definition:
-def schema_definition():
+def reading_data():
     schema_housing = types.StructType([
         types.StructField('PERIOD_BEGIN', types.TimestampType(), True),
         types.StructField('PERIOD_END', types.TimestampType(), True),
@@ -126,39 +124,71 @@ def schema_definition():
 
     print(f'Records extracted from source: {records_extracted}')
 
-    return df_housing
+    return df_housing, schema_housing
+
+def incremental_load(df_housing, gcs_bucket, schema_housing):
+    try: 
+        print('Performing incremental load...')
+        df_housing_gcs = \
+            spark.read \
+            .option('header', 'true') \
+            .schema(schema_housing) \
+            .parquet(f'gs://{gcs_bucket}/weekly_housing_market_data_most_recent.parquet')
+        
+        print('Merging data to find new records...')
+        df_housing_incremental = \
+            df_housing.join(
+                df_housing_gcs,
+                on= ['PERIOD_BEGIN', 
+                     'PERIOD_END', 
+                     'REGION_ID', 
+                     'DURATION'],
+                how= 'left_anti' # left_anti join to get only new records that are not in the GCS dataset
+            ) 
+    
+        print(f'Number of new records will be added: {df_housing_incremental.count()}')
+
+        return df_housing_incremental
+    
+    except Exception as e:
+        print(f'There is not data already stored in {gcs_bucket} bucket. All records from source will be loaded: {e}')
+    
+        return df_housing
 
 # print(df_housing.rdd.getNumPartitions)
 
 # Uploading data to GCS in parquet format:
-def upload_to_gcs(df, bucket_name):
-    print('Uploading data to Google Cloud Storage...')
+def upload_to_gcs(df_housing_incremental, bucket_name):
 
-    df \
-        .repartition(10) \
-        .write \
-        .mode('overwrite') \
-        .parquet(f'gs://{bucket_name}/weekly_housing_market_data_most_recent.parquet')
+    if df_housing_incremental.count() == 0:
+        print('No new records were found to upload to GCS')
 
-    print('Data was succesfully stored')
+        return None
+    
+    else:
+        print('Uploading data to Google Cloud Storage...')
+        df_housing_incremental \
+            .repartition(10) \
+            .write \
+            .mode('append') \
+            .parquet(f'gs://{bucket_name}/weekly_housing_market_data_most_recent.parquet')
+
+        print('Data was succesfully stored')
 
     spark.stop()
 
 def main():
+    # Spark configuration and context setup
     conf = spark_config(path_local_home, gcs_credentials)
     sc = spark_context(conf, path_local_home, gcs_credentials)
     global spark
     spark = spark_session(sc)
 
     fetching_data()
-    df_housing = schema_definition()
-    upload_to_gcs(df_housing, gcs_bucket)
-
+    df_housing, schema_housing = reading_data()
+    df_housing_incremental = incremental_load(df_housing, gcs_bucket, schema_housing)
+    upload_to_gcs(df_housing_incremental, gcs_bucket)
+    
 if __name__ == "__main__": 
     main()
-
-
-
-
-
 

@@ -86,6 +86,7 @@ def writing_to_bq(gcp_project_id, bq_dataset, df_housing_gcs):
     spark.stop()
 
 def main():
+    # Spark configuration and context setup
     conf = spark_config(path_local_home, gcs_credentials)
     sc = spark_context(conf, path_local_home, gcs_credentials)
     global spark

@@ -208,7 +208,7 @@ each layer/stage is well defined:
 
 ![dbt_model_lineage](/pictures/dbt_model_lineage.png)
 
-This layered approach ensures **data quality is enforced early**, **ogic 
+This layered approach ensures **data quality is enforced early**, logic 
 is centralized** in one place, and the **dashboard always queries pre-aggregated, 
 optimized models** rather than hitting the raw data directly.
 
@@ -309,11 +309,10 @@ While the pipeline is running, you can monitor the logs of all 3 tasks to identi
 
 http://localhost:4040
 
-Depending on your local resources, you can modify the driver and executor memory within the Spark Config Session (inside each Spark Job) to adjust to your machine's resources. It is recommended to run the pipeline on a machine with 4 cores and 16GB of RAM, or use a virtual machine with enough resources (already tested on a VM, executing in 8 to 10 minutes). Otherwise, it may take longer to finish the entire execution (20+ minutes) or crash during the process.
+Depending on your local resources, you can modify the driver memory within the Spark Config Session (inside each Spark Job) to adjust to your machine's resources. It is recommended to run the pipeline on a machine with 4 cores and 16GB of RAM, or use a virtual machine with enough resources (already tested on a VM with 8 cores and 16Gb Ram, executing in 5 to 6 minutes). Otherwise, it may take longer to finish the entire execution (20+ minutes) or crash during the process.
 
-    # Allocate memory depending on your available resources. Below are the default configured values: 
-    .set("spark.driver.memory", "4g") 
-    .set("spark.executor.memory", "4g")
+    # Allocate memory depending on your available resources. Below is the default driver configured value: 
+    .set("spark.driver.memory", "12g") 
 
 ![dag_execution_time](pictures/dag_execution_time.png)
 
@@ -324,6 +323,5 @@ Once the pipeline finishes successfully, the entire infrastructure will be fully
 
 To significantly improve the pipeline's performance, the following enhancements will be added:
 - Create a Dataproc cluster on GCP where all Spark jobs can be submitted for processing in an isolated environment, leveraging the cluster's dedicated resources.
-- Design an incremental strategy to process only newly added records, avoiding reprocessing the entire historical dataset on each execution.
 
 ---

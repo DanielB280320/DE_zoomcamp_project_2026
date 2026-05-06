@@ -27,7 +27,7 @@ with DAG(
 
     fetching_data_job = BashOperator(
         task_id="download_dataset_from_source_server_job",
-        bash_command=f"python -u {path_local_home}/src/jobs/fetching_data.py" # Run the py script in unbuffered mode to see the logs in real time.
+        bash_command=f"python -u {path_local_home}/src/jobs/fetching_data.py", # Run the py script in unbuffered mode to see the logs in real time.
     )
 
     gcs_to_bq_job = BashOperator(
